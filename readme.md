@@ -1,1 +1,1 @@
-Inspired and Dereived from great works https://github.com/tuxiaobei-scu/Mario, Refactor the original project render system to LVGL. I will port the whole game to MCU
+Inspired and Dereived from great works https://github.com/tuxiaobei-scu/Mario, Refactor the original project render system to LVGL. I will port the whole game to MCU.
