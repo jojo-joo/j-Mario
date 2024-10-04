@@ -41,8 +41,6 @@ void Level::reset()
 	update_pos = 0;
 }
 
-
-
 void Level::basic_block() 
 {
 	Mario* m = new Mario;
@@ -54,15 +52,15 @@ void Level::basic_block()
 	for (int i = 1; i <= 10; i++) {
 		for (int j = 14; j <= 15; j++) {
 			Brick* brick = new Brick(0, 0);
-			brick->Collider::setpos(map_range - i, j - 1, 1, 1);
+			brick->setpos(map_range - i, j - 1, 1, 1);
 			mp[2][map_range - i].push_back(brick);
 		}
 	}
 	Brick* brick = new Brick(1, 0);
-	brick->Collider::setpos(map_range - 10, 12, 1, 1);
+	brick->setpos(map_range - 10, 12, 1, 1);
 	mp[2][map_range - 10].push_back(brick);
 	Flag* flag = new Flag();
-	flag->Collider::setpos(map_range - 10, 3, 1, 1);
+	flag->setpos(map_range - 10, 3, 1, 1);
 	mp[1][map_range - 10].push_back(flag);
 	/*旗杆部分结束*/
 	/*城堡部分开始*/
@@ -70,25 +68,25 @@ void Level::basic_block()
 	for (int i = 1; i <= 5; i++) {
 		for (int j = 12; j <= 13; j++) {
 			freeze_block = new Freeze_block(Costume{ 8, (i == 3), 2 - (i == 3 && j == 12) }, 1);
-			freeze_block->Collider::setpos(map_range - i, j - 1, 1, 1);
+			freeze_block->setpos(map_range - i, j - 1, 1, 1);
 			mp[1][map_range - i].push_back(freeze_block);
 		}
 		freeze_block = new Freeze_block(Costume{ 8, (i >= 2 && i <= 4), 0}, 1);
-		freeze_block->Collider::setpos(map_range - i, 10, 1, 1);
+		freeze_block->setpos(map_range - i, 10, 1, 1);
 		mp[1][map_range - i].push_back(freeze_block);
 		if (i >= 2 && i <= 4) {
 			freeze_block = new Freeze_block(Costume{ 8, 0, 0 }, 1);
-			freeze_block->Collider::setpos(map_range - i, 8, 1, 1);
+			freeze_block->setpos(map_range - i, 8, 1, 1);
 			mp[1][map_range - i].push_back(freeze_block);
 		}
 	}
 	for (int i = 2; i <= 4; i++) {
 		freeze_block = new Freeze_block(Costume{ 8, 0, 5 - i }, 1);
-		freeze_block->Collider::setpos(map_range - i, 9, 1, 1);
+		freeze_block->setpos(map_range - i, 9, 1, 1);
 		mp[1][map_range - i].push_back(freeze_block);
 	}
 	Small_flag* s_flag = new Small_flag();
-	s_flag->Collider::setpos(map_range - 3, 9, 1, 1);
+	s_flag->setpos(map_range - 3, 9, 1, 1);
 	mp[0][map_range - 3].push_back(s_flag);
 	/*城堡部分结束*/
 }
@@ -103,49 +101,49 @@ Collider* Level::addobject(char* s, double x, double y)
 	std::string name = camera.gp_type[id];
 	if (name == "Brick") {
 		Brick* brick = new Brick(s);
-		brick->Collider::setpos(x, y, 1, 1);
+		brick->setpos(x, y, 1, 1);
 		mp[3][(int)x].push_back(brick);
 		return brick;
 	}
 	else if (name == "Chestnut") {
 		Chestnut* chestnut = new Chestnut(s);
-		chestnut->Collider::setpos(x, y, 1, 1);
+		chestnut->setpos(x, y, 1, 1);
 		unrun_actors[(int)x].push_back(chestnut);
 		return chestnut;
 	}
 	else if (name == "Mushroom") {
 		Mushroom* mushroom = new Mushroom(s);
-		mushroom->Collider::setpos(x, y, 1, 1);
+		mushroom->setpos(x, y, 1, 1);
 		unrun_actors[(int)x].push_back(mushroom);
 		return mushroom;
 	}
 	else if (name == "Question_Block") {
 		Question_block* question_block = new Question_block(s, x, y);
-		question_block->Collider::setpos(x, y, 1, 1);
+		question_block->setpos(x, y, 1, 1);
 		mp[4][(int)x].push_back(question_block);
 		return question_block;
 	}
 	else if (name == "Coin") {
 		Coin* coin = new Coin(s);
-		coin->Collider::setpos(x, y, 1, 1);
+		coin->setpos(x, y, 1, 1);
 		mp[3][(int)x].push_back(coin);
 		return coin;
 	}
 	else if (name == "Tortoise") {
 		Tortoise* tortoise = new Tortoise(s);
-		tortoise->Collider::setpos(x, y, 1, 1);
+		tortoise->setpos(x, y, 1, 1);
 		unrun_actors[(int)x].push_back(tortoise);
 		return tortoise;
 	}
 	else if (name == "Flower") {
 		Flower* flower = new Flower(s);
-		flower->Collider::setpos(x, y, 1, 1);
+		flower->setpos(x, y, 1, 1);
 		unrun_actors[(int)x].push_back(flower);
 		return flower;
 	}
 	else if (name == "Star") {
 		Star* star = new Star(s);
-		star->Collider::setpos(x, y, 1, 1);
+		star->setpos(x, y, 1, 1);
 		unrun_actors[(int)x].push_back(star);
 		return star;
 	}
@@ -192,11 +190,6 @@ void Level::start(const char* path)
 	camera.start();
 }
 
-void Level::restart()
-{
-	start(("level_data\\" + LEVEL_NAME + ".mio").c_str());
-}
-
 void Level::finish()
 {
 	if (finish_time) return;
@@ -212,7 +205,7 @@ void Level::finish()
 	for (int i = 1; i <= 2; i++) {
 		for (int j = 12; j <= 13; j++) {
 			freeze_block = new Freeze_block(Costume{ 8, 0, 2 }, 1);
-			freeze_block->Collider::setpos(map_range - i, j - 1, 1, 1);
+			freeze_block->setpos(map_range - i, j - 1, 1, 1);
 			mp[2][map_range - i].push_back(freeze_block);
 		}
 	}
@@ -245,20 +238,22 @@ bool Level::update()
 	if (finish_time && now_time - finish_time > 8000) { //结束判断
 		finish_time = 0;
 		level.stop();
-		freeze = true;
-		load_screen.start("course_clear");
-		restart();
+		//level.start();
+		//freeze = true;
+		//load_screen.start("course_clear");
+		//restart();
 	}
 	if (death_time && now_time - death_time > 3000) {  //死亡判断
 		death_time = 0;
 		level.stop();
-		if (LIVES) {
-			load_screen.start("begin");
-		}
-		else {
-			load_screen.start("game_over");
-		}
-		restart();
+		//level.start();
+		//if (LIVES) {
+		//	load_screen.start("begin");
+		//}
+		//else {
+		//	load_screen.start("game_over");
+		//}
+		//restart();
 	}
 	if (freeze) return camera.update();
 	if (limit_time < ((now_time - start_time) / 1000)) {

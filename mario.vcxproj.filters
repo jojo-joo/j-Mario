@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="menu.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="global.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -40,9 +37,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ege\sys_edit.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="load_screen.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="headers.h">
@@ -113,13 +107,7 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="menu.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="global.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="load_screen.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="headers.cpp">

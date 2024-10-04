@@ -30,8 +30,10 @@ Costume Collider::getcostume() {
 }
 
 void Collider::setpos(double x, double y, double width, double height) {
-	this->width = width, this->height = height;
-	this->x = x + width / 2, this->y = y + height / 2;
+	this->width = width;
+	this->height = height;
+	this->x = x + width / 2;
+	this->y = y + height / 2;
 }
 
 std::pair<double, double> Collider::getpos() {

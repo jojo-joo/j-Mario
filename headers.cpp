@@ -40,7 +40,7 @@ Coins::Coins()
 	getimage(costumes[1], item_objects, 19, 98, 10, 14);
 	getimage(costumes[2], item_objects, 35, 98, 10, 14);
 	getimage(costumes[3], item_objects, 51, 98, 10, 14);
-	for (int i = 0; i < 4; i++) zoomImage(costumes[i], 1.5);
+	for (int i = 0; i < 4; i++) zoomImage(costumes[i], 1);
 	delimage(item_objects);
 }
 
