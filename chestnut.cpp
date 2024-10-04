@@ -65,7 +65,7 @@ bool Chestnut::report_collision(int direction, Collider* target, int target_coll
 			state = 2;
 			animation_time = level.now_time;
 			freeze = true;
-			score.add_score(x, y, 200);
+			//score.add_score(x, y, 200);
 			collider_layer = -1;
 		}
 		break;
@@ -90,7 +90,7 @@ void Chestnut::kill(int direction)
 {
 	if (killed) return;
 	musicplayer.play("sound-bump");
-	score.add_score(x, y, 200);
+	//score.add_score(x, y, 200);
 	killed = true;
 	double p;
 	if (direction == RIGHT || direction == LEFT) {

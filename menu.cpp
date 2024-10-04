@@ -28,9 +28,9 @@ void Menu::reset()
 Menu::Menu()
 {
 	
-	title = newimage();
-	getimage1(title, "resources\\graphics\\title_screen.png", 1, 60, 176, 147);
-	zoomImage(title, 2.5);
+	//title = newimage();
+	//getimage1(title, "resources\\graphics\\title_screen.png", 1, 60, 176, 147);
+	//zoomImage(title, 2.5);
 	music.OpenFile("resources\\music\\start.mp3");
 	music.SetVolume(0.5);
 	music.Play();
@@ -42,7 +42,7 @@ bool Menu::render()
 	if (!isshow) return false;
 	option_cursor.update();
 	//putimage_withalpha(NULL, title, 170, 100, 2, 150, 440, 220); //显示标题
-	putimage_withalpha(NULL, title, 170, 100); //显示标题
+	//putimage_withalpha(NULL, title, 170, 100); //显示标题
 	return true;
 }
 
@@ -68,7 +68,9 @@ void Menu::stop()
 {
 	music.Stop();
 	isrun = false;
-	load_screen.start("begin");
+	//load_screen.start("begin");
+	level.freeze = false;
+	level.start();
 }
 Menu menu;
 
@@ -76,7 +78,7 @@ Option_cursor::Option_cursor()
 {
 	icon = newimage();
 	getimage1(icon, "resources\\graphics\\title_screen.png", 3, 155, 12, 164);
-	zoomImage(icon, 2.5);
+	//zoomImage(icon, 2.5);
 	DIR* dir;
 	struct dirent* ptr;
 	dir = opendir("level_data"); //打开当前目录

@@ -30,8 +30,10 @@ Costume Collider::getcostume() {
 }
 
 void Collider::setpos(double x, double y, double width, double height) {
-	this->width = width, this->height = height;
-	this->x = x + width / 2, this->y = y + height / 2;
+	this->width = width;
+	this->height = height;
+	this->x = x + width / 2;
+	this->y = y + height / 2;
 }
 
 std::pair<double, double> Collider::getpos() {
@@ -89,7 +91,7 @@ void Collider::calc()
 	lstx = x;
 	ret = checkleftright(); //ÅĞ¶Ï×óÓÒ
 	if (fabs(lstx - x) <= EPS) x = ret.first;
-	if (ret.second) vx = 0;
+	if (ret.second) vx = 0; 
 	//if (checkleftright()) x = lstx, vx = 0;
 	if (collider_layer == 0) {
 		camera.movecam(min(max(0, x - 10), level.map_range - 20), 0); //ÒÆ¶¯ÉãÏñ»ú

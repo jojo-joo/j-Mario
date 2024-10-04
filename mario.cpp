@@ -424,7 +424,7 @@ bool Mario::report_collision(int direction, Collider* target, int target_collide
 		}
 		ct = Costume{ mario_level, pole_direction, 7 };
 		level.finish();
-		score.add_score(level.map_range - 8.5, 12.5, sc, true);
+		//score.add_score(level.map_range - 8.5, 12.5, sc, true);
 		break;
 	case 4: //如果碰撞对象时蘑菇或问号砖
 		if (target->name != "question_block") {
@@ -434,7 +434,7 @@ bool Mario::report_collision(int direction, Collider* target, int target_collide
 			else if (target->name == "flower") {
 				change_level(3); //如果是花，变为火焰马里奥
 			}
-			score.add_score(x, y, 1000);
+			//score.add_score(x, y, 1000);
 		}
 		break;
 	case 6: //如果碰到无敌星

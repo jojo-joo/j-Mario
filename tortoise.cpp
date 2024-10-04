@@ -79,7 +79,7 @@ bool Tortoise::report_collision(int direction, Collider* target, int target_coll
 		if (level.mario->invincible_state_time) break;
 		if (target->freeze) break;
 		if (direction == TOP) { //如果是被踩到的，静止运动切换
-			score.add_score(x, y, 200);
+			//score.add_score(x, y, 200);
 			if (state != 1) {
 				ct = Costume{ 13, 0, 9 };
 				state = 1;
@@ -123,7 +123,7 @@ void Tortoise::kill(int direction)
 {
 	if (killed) return;
 	musicplayer.play("sound-bump");
-	score.add_score(x, y, 200);
+	//score.add_score(x, y, 200);
 	killed = true;
 	double p;
 	if (direction == RIGHT || direction == LEFT) {

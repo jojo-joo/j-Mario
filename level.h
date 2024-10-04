@@ -24,14 +24,13 @@ public:
 	Mario* mario; //马里奥的地址
 	void death(); //死亡
 	void finish(); //关卡结束
-	void restart(); //重新开始
 	void start(const char* path); //读取关卡文件
 	void start(); //开始
 	void stop(); //停止
 	bool remove(Collider* t); //删除角色
 	bool update(); //关卡更新
 	bool running(); //是否在运行
-	bool freeze = true; //是否处于冻结状态
+	bool freeze = false; //是否处于冻结状态
 	int map_range; //关卡范围
 	int limit_time = 300; //时间限制
 	int start_time; //开始时间
