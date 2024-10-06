@@ -1,4 +1,19 @@
-/* Minimal dropdown */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior-y: none;
+  margin: 0;
+}
+
 .menu:hover .dropdown {
   max-height: 700px;
 }
