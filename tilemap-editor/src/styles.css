@@ -13,7 +13,7 @@ body {
   overscroll-behavior-y: none;
   margin: 0;
 }
-
+ 
 .menu:hover .dropdown {
   max-height: 700px;
 }
@@ -164,37 +164,23 @@ body {
   border:1px solid cyan;
   border-radius: 3px;
   touch-action: none;
-  /*touch-action: auto;*/
+  background-image: url('level_1.png');
+  background-size: cover;
+  background-position: center;
 }
+
 #tileset-source {
   pointer-events: none;
 }
-.canvas_resizer{
-  user-select: none;
-  /*cursor: row-resize;*/
-  touch-action: none;
-  background: #ffffff42;
-  color: white;
-  padding: 3px;
-  border-radius: 3px;
-  width: 50px;
-}
-
 .tileset_opt_field input,
 .canvas_resizer input {
   max-width: 45px;
 }
 
-
 .tileset_opt_field.header{
   padding: 3px;
 }
-.canvas_resizer.vertical{
-  position: absolute;
-  transform-origin: left;
-  /*cursor: col-resize;*/
-  bottom: 0;
-}
+
 .canvas_wrapper{
   position: relative;
   top:0;
@@ -357,6 +343,7 @@ cursor: pointer;
     overflow: hidden;
   }
   .card_right-column{
+    
     border-top: solid grey 1px;
     padding-right: 0;
     padding-top: 3px;
@@ -425,7 +412,7 @@ cursor: pointer;
 .tilemapjs_root {
   color: #fbd5ff;
   background-color: #0a0101;
-  background: linear-gradient(0deg, rgb(0 0 0) 0%, rgb(84 84 84) 100%);
+  /* background: linear-gradient(0deg, rgb(0 0 0) 0%, rgb(84 84 84) 100%); */
 }
 .card_right-column.layers {
   background: #ffffff14;
