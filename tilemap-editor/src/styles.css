@@ -166,7 +166,7 @@ body {
   touch-action: none;
   background-image: url('level_1.png');
   background-size: cover;
-  background-position: center;
+  background-position: center; 
 }
 
 #tileset-source {

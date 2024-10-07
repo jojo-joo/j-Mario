@@ -1,0 +1,14 @@
+{ "columns":33,
+ "image":"..\/..\/..\/home\/github\/j-Mario\/resources\/graphics\/tile_set.png",
+ "imageheight":448,
+ "imagewidth":528,
+ "margin":0,
+ "name":"mario",
+ "spacing":0,
+ "tilecount":924,
+ "tiledversion":"1.11.0",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.10"
+}
