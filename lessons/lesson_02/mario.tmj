@@ -1,11 +1,4 @@
 { "compressionlevel":-1,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"json"
-        }
-    },
  "height":15,
  "infinite":false,
  "layers":[
@@ -39,11 +32,11 @@
         }, 
         {
          "id":2,
-         "image":"..\/..\/..\/home\/github\/j-Mario\/tilemap-editor\/src\/level_1.png",
+         "image":"mario.png",
          "name":"reference",
          "opacity":0.26,
          "type":"imagelayer",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }],
@@ -55,8 +48,17 @@
  "tileheight":16,
  "tilesets":[
         {
+         "columns":33,
          "firstgid":1,
-         "source":"mario_tileset.tsx"
+         "image":"tile_set.png",
+         "imageheight":448,
+         "imagewidth":528,
+         "margin":0,
+         "name":"mario",
+         "spacing":0,
+         "tilecount":924,
+         "tileheight":16,
+         "tilewidth":16
         }],
  "tilewidth":16,
  "type":"map",
