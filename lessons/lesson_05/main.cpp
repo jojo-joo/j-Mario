@@ -75,14 +75,33 @@ int get_tile_id(cute_tiled_layer_t *layer, int x, int y) {
 	return 0;
 }
 
-void copy_tile_to_map_from_png(cp_image_t* p_dst_img, cp_image_t* p_src_img, int x, int y, int tile_id) {
+void blend_tile_to_map_from_png(cp_image_t* p_dst_img, cp_image_t* p_src_img, int x, int y, int tile_id) {
 	int tiles_in_row = p_src_img->w >> 4;
 	int tile_y = tile_id / tiles_in_row;
 	int tile_x = tile_id % tiles_in_row;
 	uint32_t* p_dst = (uint32_t*)p_dst_img->pix + y * p_dst_img->w + x;
 	uint32_t* p_src = (uint32_t*)p_src_img->pix + (tile_y << 4) * p_src_img->w + (tile_x << 4);
 	for (int j = 0; j < 16; j++) {
-		memcpy(p_dst, p_src, 16 * sizeof(uint32_t));
+		//memcpy(p_dst, p_src, 16 * sizeof(uint32_t)); 
+		for (int i = 0; i < 16; i++) {
+			uint8_t* p_src_rgba = (uint8_t*)(p_src + i);
+			uint8_t* p_dst_rgba = (uint8_t*)(p_dst + i);
+			float fr = p_src_rgba[0];
+			float fg = p_src_rgba[1];
+			float fb = p_src_rgba[2];
+			float a = p_src_rgba[3]/255.0f;
+			float br = p_dst_rgba[0];
+			float bg = p_dst_rgba[1];
+			float bb = p_dst_rgba[2];
+
+			br = (1 - a) * br + a * fr;
+			bg = (1 - a) * bg + a * fg;
+			bb = (1 - a) * bb + a * fb;
+
+			p_dst_rgba[0] = br;
+			p_dst_rgba[1] = bg;
+			p_dst_rgba[2] = bb;
+		}
 		p_dst += p_dst_img->w;
 		p_src += p_src_img->w;
 	}
@@ -106,11 +125,22 @@ void disp_layer(int layer_id) {
 	for (int y = 0; y < m_framebuffer.h; y += m_map->tileheight) {
 		for (int x = 0; x < m_framebuffer.w; x += m_map->tilewidth) {
 			int tile_gid = get_tile_id(layer, x, y); // layer 3 = background
-			if (tile_gid > 0) copy_tile_to_map_from_png(&m_framebuffer, &m_tilesets, x, y, tile_gid - m_map->tilesets->firstgid);
+			if (tile_gid > 0) {
+				blend_tile_to_map_from_png(&m_framebuffer, &m_tilesets, x, y, tile_gid - m_map->tilesets->firstgid);
+			}
 		}
 	}
 
 	return;
+}
+
+void image_fill(cp_image_t * p_img, uint32_t color) {
+	uint32_t* p = (uint32_t * )p_img->pix;
+	for (int y = 0; y < p_img->h; y ++) {
+		for (int x = 0; x < p_img->w; x ++) {
+			*p++ = color;
+		}
+	}
 }
 
 int main() {
@@ -122,7 +152,6 @@ int main() {
 	m_framebuffer.w = width;
 	m_framebuffer.h = height;
 	m_framebuffer.pix = (cp_pixel_t*)malloc(width*height*sizeof(uint32_t));
-	memset(m_framebuffer.pix, 0, width * height * sizeof(uint32_t));
 
 	//int width = m_map->tilesets->imagewidth;
 	//int height = m_map->tilesets->imageheight;
@@ -135,6 +164,7 @@ int main() {
 	bool is_running = true;
 
 	while (is_running) {
+		image_fill(&m_framebuffer, (((255) << 16) | ((140) << 8) | (107) | ((255) << 24))); //SDL_PIXELFORMAT_ABGR8888
 		disp_layer(3);
 		disp_layer(1);
 		SDL_UpdateTexture(m_tex, NULL, m_framebuffer.pix, width * sizeof(Uint32));
