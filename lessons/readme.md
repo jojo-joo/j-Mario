@@ -4,3 +4,4 @@
 - lesson_03: parse .tmj and .png file
 - lesson_04: display png by sdl2
 - lesson_05: display background by sdl2
+- lesson_06: implement a simple camera system
