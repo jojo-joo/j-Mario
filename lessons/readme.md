@@ -5,3 +5,4 @@
 - lesson_04: display png by sdl2
 - lesson_05: display background by sdl2
 - lesson_06: implement a simple camera system
+- lesson_07: draw a mario who can move
