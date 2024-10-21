@@ -1,0 +1,14 @@
+{ "columns":24,
+ "image":"mario_bros.png",
+ "imageheight":528,
+ "imagewidth":384,
+ "margin":0,
+ "name":"hero",
+ "spacing":0,
+ "tilecount":792,
+ "tiledversion":"1.11.0",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.10"
+}

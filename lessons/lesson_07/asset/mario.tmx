@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="224" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="1">
+ <editorsettings>
+  <export target="mario.tmj" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" name="mario" tilewidth="16" tileheight="16" tilecount="924" columns="33">
   <image source="tile_set.png" width="528" height="448"/>
+ </tileset>
+ <tileset firstgid="925" name="hero" tilewidth="16" tileheight="16" tilecount="792" columns="24">
+  <image source="mario_bros.png" width="384" height="528"/>
  </tileset>
  <layer id="3" name="background" width="224" height="15">
   <data encoding="csv">
