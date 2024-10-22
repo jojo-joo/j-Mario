@@ -6,3 +6,4 @@
 - lesson_05: display background by sdl2
 - lesson_06: implement a simple camera system
 - lesson_07: draw a mario who can move
+- lesson_08: optimize camera system

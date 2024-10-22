@@ -25,9 +25,10 @@ struct fsdata_file
 SDL_Window* m_win = NULL;
 SDL_Renderer* m_ren = NULL;
 SDL_Texture* m_tex = NULL;
-cp_image_t m_img_background;
-cp_image_t m_framebuffer;
-cute_tiled_map_t *m_map = NULL;
+cp_image_t m_img_tiled_set;
+cp_image_t m_img_map;
+cp_image_t m_img_cam;
+cute_tiled_map_t* m_tiled_map = NULL;
 bool g_leftKeyPressed = false;
 bool g_rightKeyPressed = false;
 bool g_upKeyPressed = false;
@@ -41,62 +42,6 @@ void detectKey(void) {
 	g_downKeyPressed = SDL_GetKeyboardState(NULL)[SDL_SCANCODE_DOWN] != 0;
 
 	return;
-}
-
-void tmj_init(void) {
-	m_map = cute_tiled_load_map_from_memory(data_mario_tmj + 11, sizeof(data_mario_tmj) - 11, NULL);
-	assert(m_map);
-	printf("map\r\n");
-	printf("- width: %d\r\n", m_map->width);
-	printf("- height: %d\r\n", m_map->height);
-	printf("- tilewidth: %d\r\n", m_map->tilewidth);
-	printf("- tileheight: %d\r\n", m_map->tileheight);
-	printf("\r\n");
-
-	cute_tiled_layer_t* layer = m_map->layers;
-	assert(layer);
-	printf("layers\r\n");
-	while (layer) {
-		printf("- layer %d: %s\r\n", layer->id, layer->name);
-		layer = layer->next;
-	}
-	printf("\r\n");
-
-	cute_tiled_tileset_t* tilesets = m_map->tilesets;
-
-	while (tilesets) {
-		printf("tilesets\r\n");
-		printf("- image: %s\r\n", tilesets->image);
-		printf("- firstgid: %d\r\n", tilesets->firstgid);
-		printf("- imagewidth: %d\r\n", tilesets->imagewidth);
-		printf("- imageheight: %d\r\n", tilesets->imageheight);
-		printf("- tilewidth: %d\r\n", tilesets->tilewidth);
-		printf("- tileheight: %d\r\n", tilesets->tileheight);
-		printf("\r\n");
-
-		tilesets = tilesets->next;
-	}
-
-	return;
-}
-
-void png_init(void) {
-	m_img_background = cp_load_png("asset/tile_set.png");
-
-}
-
-int get_tile_id(cute_tiled_layer_t* layer, int x, int y) {
-	x /= m_map->tilewidth;
-	y /= m_map->tileheight;
-	int index = y * m_map->width + x;
-	if (index < layer->data_count) {
-		return layer->data[index];
-	}
-	else {
-		throw "tile id error!";
-	}
-
-	return 0;
 }
 
 void blend_tile_to_map_from_png(cp_image_t* p_dst_img, cp_image_t* p_src_img, int x, int y, int tile_id) {
@@ -131,7 +76,21 @@ void blend_tile_to_map_from_png(cp_image_t* p_dst_img, cp_image_t* p_src_img, in
 	}
 }
 
-void image_fill(cp_image_t* p_img, uint32_t color) {
+int get_tile_id(cute_tiled_layer_t* layer, int x, int y) {
+	x /= m_tiled_map->tilewidth;
+	y /= m_tiled_map->tileheight;
+	int index = y * m_tiled_map->width + x;
+	if (index < layer->data_count) {
+		return layer->data[index];
+	}
+	else {
+		throw "tile id error!";
+	}
+
+	return 0;
+}
+
+void cp_image_fill(cp_image_t* p_img, uint32_t color) {
 	uint32_t* p = (uint32_t*)p_img->pix;
 	for (int y = 0; y < p_img->h; y++) {
 		for (int x = 0; x < p_img->w; x++) {
@@ -147,6 +106,17 @@ public:
 	int w = 0;
 	int h = 0;
 };
+
+void cp_image_copy(cp_image_t* p_dst, cp_image_t* p_src, CRect &r) {
+	uint32_t* s = (uint32_t*)p_src->pix + r.y * p_src->w + r.x;
+	uint32_t* d = (uint32_t*)p_dst->pix;
+
+	for (int j = 0; j < r.h; j++) {
+		memcpy(d, s, r.w * sizeof(uint32_t));
+		s += p_src->w;
+		d += p_dst->w;
+	}
+}
 
 class CCollider {
 public:
@@ -177,7 +147,7 @@ public:
 		}
 
 		if (g_rightKeyPressed) {
-			if (m_rect.x < m_map->width * m_map->tilewidth) {
+			if (m_rect.x < m_tiled_map->width * m_tiled_map->tilewidth) {
 				m_rect.x += 2;
 			}
 		}
@@ -189,17 +159,17 @@ public:
 		}
 
 		if (g_downKeyPressed) {
-			if (m_rect.y < m_map->height * m_map->tileheight) {
+			if (m_rect.y < m_tiled_map->height * m_tiled_map->tileheight) {
 				m_rect.y += 2;
 			}
 		}
 	}
 
 
-	virtual void Render(CRect &rectCamera) {
-		int x = m_rect.x - rectCamera.x + (rectCamera.x % 16);
+	virtual void Render(CRect& rectCamera) {
+		int x = m_rect.x - rectCamera.x;
 		int y = m_rect.y - rectCamera.y;
-		blend_tile_to_map_from_png(&m_framebuffer, &m_img_hero, x, y, 53);
+		blend_tile_to_map_from_png(&m_img_cam, &m_img_hero, x, y, 53);
 	}
 
 private:
@@ -209,15 +179,67 @@ private:
 class CWorld {
 public:
 	CWorld(int w, int h) {
-		m_width = w;
-		m_height = h;
-		m_camera_rect.w = 256;
+		m_camera_rect.w = w;
 		m_camera_rect.h = h;
 		m_camera_rect.x = 0;
 		m_camera_rect.y = 0;
+		m_tiled_map = cute_tiled_load_map_from_memory(data_mario_tmj + 11, sizeof(data_mario_tmj) - 11, NULL);
+		assert(m_tiled_map);
+		printf("map\r\n");
+		printf("- width: %d\r\n", m_tiled_map->width);
+		printf("- height: %d\r\n", m_tiled_map->height);
+		printf("- tilewidth: %d\r\n", m_tiled_map->tilewidth);
+		printf("- tileheight: %d\r\n", m_tiled_map->tileheight);
+		printf("\r\n");
+
+		cute_tiled_layer_t* layer = m_tiled_map->layers;
+		assert(layer);
+		printf("layers\r\n");
+		while (layer->id == 3) {
+			break;
+		}
+		printf("\r\n");
+
+		cute_tiled_tileset_t* tilesets = m_tiled_map->tilesets;
+
+		while (tilesets) {
+			printf("tilesets\r\n");
+			printf("- image: %s\r\n", tilesets->image);
+			printf("- firstgid: %d\r\n", tilesets->firstgid);
+			printf("- imagewidth: %d\r\n", tilesets->imagewidth);
+			printf("- imageheight: %d\r\n", tilesets->imageheight);
+			printf("- tilewidth: %d\r\n", tilesets->tilewidth);
+			printf("- tileheight: %d\r\n", tilesets->tileheight);
+			printf("\r\n");
+
+			tilesets = tilesets->next;
+		}
+
+		// alloc tile set image
+		m_img_tiled_set = cp_load_png("asset/tile_set.png");
+
+		// alloc map image
+		m_img_map.w = m_tiled_map->width * m_tiled_map->tilewidth;
+		m_img_map.h = m_tiled_map->height * m_tiled_map->tileheight;
+		m_img_map.pix = (cp_pixel_t*)malloc(m_img_map.w * m_img_map.h * sizeof(uint32_t));
+		cp_image_fill(&m_img_map, (((255) << 16) | ((140) << 8) | (107) | ((255) << 24))); //SDL_PIXELFORMAT_ABGR8888
+
+		for (int y = 0; y < m_img_map.h; y += m_tiled_map->tileheight) {
+			for (int x = 0; x < m_img_map.w; x += m_tiled_map->tilewidth) {
+				int tile_gid = get_tile_id(layer, x, y); // layer 3 = background
+				if (tile_gid > 0) {
+					blend_tile_to_map_from_png(&m_img_map, &m_img_tiled_set, x, y, tile_gid - m_tiled_map->tilesets->firstgid);
+				}
+			}
+		}
+
+		// alloc camera image
+		m_img_cam.w = w;
+		m_img_cam.h = h;
+		m_img_cam.pix = (cp_pixel_t*)malloc(m_img_cam.w * m_img_cam.h * sizeof(uint32_t));
 	}
 
-	void AddCollider(CCollider * pCollider) {
+	void AddCollider(CCollider* pCollider) {
 		m_listColliders.push_back(pCollider);
 	}
 
@@ -236,8 +258,8 @@ public:
 		if (x < (m_camera_rect.w >> 1)) {
 			m_camera_rect.x = 0;
 		}
-		else if (x > m_map->width * m_map->tilewidth - (m_camera_rect.w >> 1)) {
-			m_camera_rect.x = m_map->width * m_map->tilewidth - (m_camera_rect.w >> 1);
+		else if (x > m_tiled_map->width * m_tiled_map->tilewidth - (m_camera_rect.w >> 1)) {
+			m_camera_rect.x = m_tiled_map->width * m_tiled_map->tilewidth - (m_camera_rect.w >> 1);
 		}
 		else {
 			m_camera_rect.x = x - (m_camera_rect.w >> 1);
@@ -249,66 +271,28 @@ public:
 	}
 
 	void Render() {
-		image_fill(&m_framebuffer, (((255) << 16) | ((140) << 8) | (107) | ((255) << 24))); //SDL_PIXELFORMAT_ABGR8888
-		disp_layer(3, m_camera_rect);
-		disp_layer(1, m_camera_rect);
+		cp_image_copy(&m_img_cam, &m_img_map, m_camera_rect);
 
 		for (CCollider* p : m_listColliders) {
 			p->Render(m_camera_rect);
 		}
 
-		SDL_UpdateTexture(m_tex, NULL, m_framebuffer.pix + (m_camera_rect.x % 16), m_framebuffer.w * sizeof(Uint32));
+		SDL_UpdateTexture(m_tex, NULL, m_img_cam.pix, m_img_cam.w * sizeof(Uint32));
 		SDL_RenderClear(m_ren);
 		SDL_RenderCopy(m_ren, m_tex, NULL, NULL);
 		SDL_RenderPresent(m_ren);
 	}
 
 private:
-	void disp_layer(int layer_id, CRect &r) {
-		cute_tiled_layer_t* layer = m_map->layers;
-		while (layer) {
-			if (layer_id == layer->id) {
-				break;
-			}
-
-			layer = layer->next;
-		}
-
-		if (NULL == layer) {
-			printf("background layer not found!\r\n");
-			return;
-		}
-
-		for (int y = 0; y < m_framebuffer.h; y += m_map->tileheight) {
-			for (int x = 0; x < m_framebuffer.w; x += m_map->tilewidth) {
-				int tile_gid = get_tile_id(layer, (r.x & 0xFFFFFFF0) + x, y); // layer 3 = background
-				if (tile_gid > 0) {
-					blend_tile_to_map_from_png(&m_framebuffer, &m_img_background, x, y, tile_gid - m_map->tilesets->firstgid);
-				}
-			}
-		}
-
-		return;
-	}
-
-	int m_width;
-	int m_height;
 	CRect m_camera_rect;
 	std::list <CCollider*> m_listColliders;
 };
 
 int main() {
-	tmj_init();
-	png_init();
+	int width = 256;
+	int height = 240;
 
-	int width = 256;// m_map->width* m_map->tilewidth;
-	int height = m_map->height * m_map->tileheight;
-	m_framebuffer.w = width + m_map->tilewidth;
-	m_framebuffer.h = height;
-	m_framebuffer.pix = (cp_pixel_t*)malloc(m_framebuffer.w * m_framebuffer.h *sizeof(uint32_t));
-	int x = 0;
-	int y = 0;
-	CWorld* pWorld = new CWorld(m_map->width, m_map->height);
+	CWorld* pWorld = new CWorld(width, height);
 	CHero* pMario = new CHero;
 	pWorld->AddCollider(pMario);
 
@@ -327,7 +311,7 @@ int main() {
 
 		pWorld->Update();
 		pWorld->Render();
-		
+
 		while (SDL_PollEvent(&event)) {
 			uint32_t e = 0;
 			switch (event.type)
@@ -357,7 +341,7 @@ int main() {
 	SDL_DestroyTexture(m_tex);
 	SDL_DestroyRenderer(m_ren);
 	SDL_DestroyWindow(m_win);
-	cute_tiled_free_map(m_map);
+	cute_tiled_free_map(m_tiled_map);
 
 	return 0;
 }
