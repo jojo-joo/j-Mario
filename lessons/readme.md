@@ -7,3 +7,4 @@
 - lesson_06: implement a simple camera system
 - lesson_07: draw a mario who can move
 - lesson_08: optimize camera system
+- lesson_09: simple collider system
