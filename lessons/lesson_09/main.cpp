@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
-#include <list>
+#include <vector>
 #include <memory>
 #include <string>
 
@@ -120,37 +120,39 @@ void cp_image_copy(cp_image_t* p_dst, cp_image_t* p_src, CRect &r) {
 	}
 }
 
-class CCollider {
+class CBody {
 public:
-	static CCollider* factory(const std::string& type);
+	static CBody* factory(const std::string& type);
 	virtual void Update() = 0;
 	virtual void Render(CRect& rectCamera) = 0;
 
 	CRect m_rect;
+	float m_mass = FLT_MAX;
+	float m_invMass = 0.0f;
 };
 
-class CBrick : public CCollider {
+class CBrick : public CBody {
 public:
 	virtual void Update() {}
 	virtual void Render(CRect& rectCamera) {}
 };
-class CWall : public CCollider {
+class CWall : public CBody {
 public:
 	virtual void Update() {}
 	virtual void Render(CRect& rectCamera) {}
 };
-class CQuestion : public CCollider {
+class CQuestion : public CBody {
 public:
 	virtual void Update() {}
 	virtual void Render(CRect& rectCamera) {}
 };
-class CPipe : public CCollider {
+class CPipe : public CBody {
 public:
 	virtual void Update() {}
 	virtual void Render(CRect& rectCamera) {}
 };
 
-CCollider* CCollider::factory(const std::string& type) {
+CBody* CBody::factory(const std::string& type) {
 	if (type == "CBrick") {
 		return new CBrick();
 	}
@@ -168,9 +170,11 @@ CCollider* CCollider::factory(const std::string& type) {
 	}
 }
 
-class CHero : public CCollider {
+class CHero : public CBody {
 public:
-	CHero() {
+	CHero(float mass) {
+		m_mass = mass;
+		m_invMass = 1.0f / m_mass;
 		m_img_hero = cp_load_png("asset/mario_bros.png");
 	}
 
@@ -223,21 +227,24 @@ public:
 		InitCollider();
 	}
 
-	void AddHero(CHero* p) {
-		m_pHero = p;
+	void Add(CBody* p) {
+		m_listCollides.push_back(p);
 	}
 
 	void Update() {
 		detectKey();
-		m_pHero->Update();
+		int x = 0;
+		int y = 0;
 
-		for (CCollider* p : m_listColliders) {
+		checkCollision();
+
+		for (CBody* p : m_listCollides) {
 			p->Update();
-			checkCollision(m_pHero, p);
+			if (dynamic_cast<CHero*>(p)) {
+				x = p->m_rect.x;
+				y = p->m_rect.y;
+			}
 		}
-
-		int x = m_pHero->m_rect.x;
-		int y = m_pHero->m_rect.y;
 
 		if (x < (m_camera_rect.w >> 1)) {
 			m_camera_rect.x = 0;
@@ -257,11 +264,9 @@ public:
 	void Render() {
 		cp_image_copy(&m_img_cam, &m_img_map, m_camera_rect);
 
-		for (CCollider* p : m_listColliders) {
+		for (CBody* p : m_listCollides) {
 			p->Render(m_camera_rect);
 		}
-
-		m_pHero->Render(m_camera_rect);
 
 		SDL_UpdateTexture(m_tex, NULL, m_img_cam.pix, m_img_cam.w * sizeof(Uint32));
 		SDL_RenderClear(m_ren);
@@ -271,10 +276,17 @@ public:
 
 private:
 	CRect m_camera_rect;
-	std::list <CCollider*> m_listColliders;
-	CHero* m_pHero = NULL;
-	bool checkCollision(CHero* pHero, CCollider* p) {
+	std::vector <CBody*> m_listCollides;
+	void checkCollision() {
+		for (int j = 0; j < m_listCollides.size(); j++) {
+			for (int i = j+1; i < m_listCollides.size(); i++) {
+				CBody* bj = m_listCollides[j];
+				CBody* bi = m_listCollides[i];
 
+				if (bi->m_invMass == 0.0f && bj->m_invMass == 0.0f) // no need to handle static bodys
+					continue;
+			}
+		}
 	}
 	void InitBackgound() {
 		m_tiled_map = cute_tiled_load_map_from_memory(data_mario_tmj + 11, sizeof(data_mario_tmj) - 11, NULL);
@@ -317,8 +329,8 @@ private:
 
 		cute_tiled_object_t* object = layer->objects;
 		while (object) {
-			CCollider* p = CCollider::factory(object->type.ptr);
-			m_listColliders.push_back(p);
+			CBody* p = CBody::factory(object->type.ptr);
+			m_listCollides.push_back(p);
 			object = object->next;
 		}
 	}
@@ -329,8 +341,8 @@ int main() {
 	int height = 240;
 
 	CWorld* pWorld = new CWorld(width, height);
-	CHero* pMario = new CHero;
-	pWorld->AddHero(pMario);
+	CHero* pMario = new CHero(1.0f);
+	pWorld->Add(pMario);
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 	m_win = SDL_CreateWindow("j-Mario", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
