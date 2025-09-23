@@ -290,7 +290,7 @@ private:
 	}
 	void InitBackgound() {
 		m_tiled_map = cute_tiled_load_map_from_memory(data_mario_tmj + 11, sizeof(data_mario_tmj) - 11, NULL);
-		cute_tiled_layer_t* layer = m_tiled_map->layers;
+		cute_tiled_layer_t* layer = m_tiled_map->layers; 
 		while (layer) {
 			if (layer->id == 3) break;
 			layer = layer->next;
