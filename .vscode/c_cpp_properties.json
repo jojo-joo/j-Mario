@@ -1,0 +1,16 @@
+{
+  "configurations": [
+    {
+      "name": "TCC",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/tools/tcc/include",
+        "${workspaceFolder}/tools/tcc/include/winapi"
+      ],
+      "defines": ["_WIN32", "WIN32", "UNICODE", "_UNICODE"],
+      "compilerPath": "${workspaceFolder}/tools/tcc/tcc.exe",
+      "cStandard": "c99"
+    }
+  ],
+  "version": 4
+}

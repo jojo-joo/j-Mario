@@ -1,9 +1,3 @@
-//+---------------------------------------------------------------------------
-//
-//  HELLO_WIN.C - Windows GUI 'Hello World!' Example
-//
-//+---------------------------------------------------------------------------
-
 #include <windows.h>
 
 #define APPNAME "HELLO_WIN"
@@ -56,7 +50,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             hdc = BeginPaint(hwnd, &ps);
 
             GetClientRect(hwnd, &rc);
-            SetTextColor(hdc, RGB(240,240,96));
+            SetTextColor(hdc, 0x00FFFFFF);
             SetBkMode(hdc, TRANSPARENT);
             DrawText(hdc, pWindowText, -1, &rc, DT_CENTER|DT_SINGLELINE|DT_VCENTER);
 
@@ -113,8 +107,8 @@ int APIENTRY WinMain(
         WS_OVERLAPPEDWINDOW|WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        360,//CW_USEDEFAULT,
-        240,//CW_USEDEFAULT,
+        256,//CW_USEDEFAULT,
+        256,//CW_USEDEFAULT,
         0,
         0,
         hInstance,
