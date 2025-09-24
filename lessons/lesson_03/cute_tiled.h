@@ -1301,11 +1301,11 @@ const char* cute_tiled_error_file = NULL; 	// The filepath of the file being par
 #include <stdlib.h>
 
 #if !defined(CUTE_TILED_STRTOLL)
-	#define CUTE_TILED_STRTOLL strtoll
+	#define CUTE_TILED_STRTOLL strtol
 #endif
 
 #if !defined(CUTE_TILED_STRTOULL)
-	#define CUTE_TILED_STRTOULL strtoull
+	#define CUTE_TILED_STRTOULL strtoul
 #endif
 
 #if !defined(CUTE_TILED_STRTOD)
